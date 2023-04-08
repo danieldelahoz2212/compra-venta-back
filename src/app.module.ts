@@ -1,21 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PermisosModule } from './permisos/permisos.module';
-import { ModuloAccionesModule } from './modulo-acciones/modulo-acciones.module';
-import { CajaModule } from './caja/caja.module';
-import { ComprasModule } from './compras/compras.module';
 import { ClienteModule } from './cliente/cliente.module';
-import { VentaModule } from './venta/venta.module';
 import { TransaccionModule } from './transaccion/transaccion.module';
 import { UsuarioModule } from './usuario/usuario.module';
-import { DetallesCompraModule } from './detalles-compra/detalles-compra.module';
-import { TiposUsuarioModule } from './tipos-usuario/tipos-usuario.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AlmacenModule } from './almacen/almacen.module';
-import { InventarioModule } from './inventario/inventario.module';
-//import { ParametroValorPModule } from './parametro-valor-p/parametro-valor-p.module';
-import { TrasladoModule } from './traslado/traslado.module';
-
+import { ParametroModule } from './parametro/parametro.module';
+require('dotenv').config();
 
 
 @Module({
@@ -29,38 +20,14 @@ import { TrasladoModule } from './traslado/traslado.module';
       database: process.env.DATABESE_NAME,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: true,
+      autoLoadEntities: true,
     }),
-
-    PermisosModule, 
-
-    ModuloAccionesModule,
-
-    CajaModule,
-
-    ComprasModule, 
-
-    ClienteModule,
-
-    VentaModule,
-
-    TransaccionModule,
-
-    UsuarioModule, 
-    
-    DetallesCompraModule, 
-    
-    TiposUsuarioModule,
-
     AlmacenModule,
-
-    InventarioModule,
-
-
+    ClienteModule,
     TransaccionModule,
-
-    TrasladoModule
+    UsuarioModule,
+    ParametroModule, 
   ],
 })
 export class AppModule {}

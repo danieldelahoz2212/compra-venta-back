@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { TiposUsuario } from "../../tipos-usuario/entities/tipos-usuario.entity"
+import { TiposUsuario } from './tipos-usuario.entity';
 
 @Entity()
 export class Usuario {
@@ -67,6 +67,8 @@ export class Usuario {
         { cascade: true }
     )
     idTipoUsuario: number;
+
+    
 
     @Column({
         type: 'tinyint',

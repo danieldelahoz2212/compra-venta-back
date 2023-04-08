@@ -1,7 +1,7 @@
 const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
 
 @Entity()
-export class Transaccion {
+export class Caja {
 
     @PrimaryGeneratedColumn({
         type: 'bigint',
@@ -9,21 +9,24 @@ export class Transaccion {
     })
     id: number;
 
+    // falta colocar la columna que relaciona con transacciones
+    // falta colocar la columna que relaciona con usuario
+    // falta colocar la columna que relaciona con almacen
+
     @Column({
         type: 'bigint'
     })
     idTipoTransaccion: number;
 
-    // @Column({
-    //     type: 'bigint',
-    //     unsigned: true
-    // })
-    // idAlmacen: number;
+    @Column({
+        type: 'double'
+    })
+    valor: number;
 
     @Column({
         type: 'datetime'
     })
-    fecha: Date;
+    Fecha: Date;
 
     @Column({
         type: 'tinyint',
