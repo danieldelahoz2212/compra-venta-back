@@ -1,4 +1,5 @@
-const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany } from "typeorm";
+import { Inventario, Cliente, Transaccion,  } from "./";
 
 @Entity()
 export class Venta {
@@ -8,6 +9,21 @@ export class Venta {
         unsigned: true
     })
     id: number;
+
+    @Column({
+        type: 'double'
+    })
+    valor: number;
+
+    @OneToOne(() => Inventario, { nullable: false })
+    @JoinColumn()
+    inventario: Inventario;
+
+    @ManyToOne(() => Cliente, (cliente) => cliente.id, { nullable: false })
+    cliente: Cliente;
+
+    @OneToMany(() => Transaccion, transaccion => transaccion, { nullable: false })
+    transacciones: Transaccion[];
 
     @Column({
         type: 'tinyint',

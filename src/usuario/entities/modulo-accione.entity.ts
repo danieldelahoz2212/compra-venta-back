@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, OneToMany } from 'typeorm';
+import { Permiso } from './permiso.entity';
 
 @Entity()
 export class ModuloAccione {
@@ -20,6 +21,9 @@ export class ModuloAccione {
         unsigned: true
     })
     idModulos: number;
+
+    @OneToMany(() => Permiso, permiso => permiso.id)
+    permisos: Permiso[];
 
     @Column({
         type: 'tinyint',

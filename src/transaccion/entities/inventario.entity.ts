@@ -1,4 +1,5 @@
-const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
+import { Almacen, Compra, Traslado } from "./";
 
 @Entity()
 export class Inventario {
@@ -8,16 +9,14 @@ export class Inventario {
     })
     id: number;
 
-    @Column({
-        type: 'bigint',
-        unique: true,
-    })
-    ubicacion: number;
+    @ManyToOne(() => Almacen, (almacen) => almacen.id, { nullable: false })
+    ubicacion: Almacen;
 
-    @Column({
-        type: 'bigint'
-    })
-    origenCompra: number;
+    @ManyToOne(() => Almacen, (almacen) => almacen.id, { nullable: false })
+    origenCompra: Almacen;
+
+    @OneToMany(() => Traslado, traslado => traslado.inventario)
+    valores: Traslado[];
 
     @Column({
         type: 'varchar',
@@ -26,20 +25,19 @@ export class Inventario {
     nombre: string;
 
     @Column({
-        type: 'bigint',
-        unique: true,
+        type: 'text'
     })
-    idTipoDPago: number;
+    descripcion: string;
+
+    @Column({
+        type: 'bigint',
+    })
+    idTipoObjeto: number;
 
     @Column({
         type: 'date'
     })
     fechaDeEntrada: Date;
-
-    @Column({
-        type: 'text'
-    })
-    descripcion: string;
 
     @Column({
         type: 'tinyint',

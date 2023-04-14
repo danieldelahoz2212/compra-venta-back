@@ -1,4 +1,6 @@
-const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
+import { ManyToOne, Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Almacen, Transaccion } from "./";
+import { Usuario } from "src/usuario/entities";
 
 @Entity()
 export class Caja {
@@ -8,10 +10,6 @@ export class Caja {
         unsigned: true
     })
     id: number;
-
-    // falta colocar la columna que relaciona con transacciones
-    // falta colocar la columna que relaciona con usuario
-    // falta colocar la columna que relaciona con almacen
 
     @Column({
         type: 'bigint'
@@ -26,7 +24,17 @@ export class Caja {
     @Column({
         type: 'datetime'
     })
-    Fecha: Date;
+    fecha: Date;
+
+    @ManyToOne(() => Usuario, (usuario) => usuario.id, { nullable: false })
+    usuario: Usuario;
+
+    @ManyToOne(() => Almacen, (almacen) => almacen.id, { nullable: false })
+    almacen: Almacen;
+
+    @OneToOne(() => Transaccion, (transaccion) => transaccion.caja, { nullable: false })
+    @JoinColumn()
+    transaccion: Transaccion;
 
     @Column({
         type: 'tinyint',

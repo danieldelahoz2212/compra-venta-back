@@ -2,7 +2,8 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Parametro } from "./parametro.entity";
 
 @Entity()
-export class ValorParamtero {
+export class ValorParametro {
+
     @PrimaryGeneratedColumn({
         type: 'bigint',
         unsigned: true
@@ -11,13 +12,12 @@ export class ValorParamtero {
 
     @Column({
         type: 'varchar',
-        unique: true,
         length: 500
     })
     valor_parametro: string;
 
-    @ManyToOne(type => Parametro, parametro=>parametro.id)
-    idParamtero: Parametro;
+    @ManyToOne(() => Parametro, parametro => parametro.valores, { nullable: false })
+    parametro: Parametro;
 
     @Column({
         type: 'tinyint',

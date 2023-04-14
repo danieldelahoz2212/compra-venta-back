@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ValorParamtero } from "./valorParamtero.entity";
+import { ValorParametro } from "./valorParametro.entity";
 
 @Entity()
 export class Parametro {
@@ -11,13 +11,14 @@ export class Parametro {
 
     @Column({
         type: 'varchar',
-        unique: true,
         length: 500
     })
     nombre_parametro: string;
 
-    @OneToMany(() => ValorParamtero, valor => valor.idParamtero)
-    valores: ValorParamtero[];
+    @OneToMany(() => ValorParametro, 
+    valor => valor.parametro, 
+    { cascade: true })
+    valores: ValorParametro[];
 
     @Column({
         type: 'tinyint',

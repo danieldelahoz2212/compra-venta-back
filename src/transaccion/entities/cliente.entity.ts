@@ -1,4 +1,5 @@
-const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
+import { OneToMany, Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Compra, Venta } from "./";
 
 @Entity()
 export class Cliente {
@@ -33,21 +34,29 @@ export class Cliente {
     @Column({
         type: 'varchar',
         unique: true,
-        length: 500
+        length: 500,
     })
     numDocumento: string;
 
     @Column({
         type: 'varchar',
-        length: 500
+        length: 500,
+        nullable: false,
     })
     direccion: string;
 
     @Column({
         type: 'varchar',
-        length: 500
+        length: 500,
+        nullable: false,
     })
     numTelefono: string;
+
+    @OneToMany(() => Compra, compra => compra.cliente)
+    ventas: Compra[];
+
+    @OneToMany(() => Venta, venta => venta.cliente)
+    compra: Venta[];
 
     @Column({
         type: 'tinyint',

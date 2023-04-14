@@ -1,11 +1,13 @@
-const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Permiso, Usuario } from "./";
 
 @Entity()
 export class TiposUsuario {
 
-    @PrimaryGeneratedColumn({ 
-        type: 'bigint', 
-        unsigned: true })
+    @PrimaryGeneratedColumn({
+        type: 'bigint',
+        unsigned: true
+    })
     id: number;
 
     @Column({
@@ -14,9 +16,18 @@ export class TiposUsuario {
     })
     nombre: string;
 
-    @Column({ type: 'tinyint', 
-    width: 1, 
-    default: 1 
-})
+    @OneToMany(() => Permiso, 
+    permiso => permiso.tipoUsuario)
+    permisos: Permiso[];
+
+    @OneToMany(() => Usuario, 
+    usuario => usuario.tipoUsuario)
+    usuarios: Usuario[];
+
+    @Column({
+        type: 'tinyint',
+        width: 1,
+        default: 1
+    })
     estado: number;
 }

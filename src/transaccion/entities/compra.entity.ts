@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Transaccion, Cliente, DetallesCompra, Inventario } from './';
 
 @Entity()
 export class Compra {
@@ -10,12 +11,17 @@ export class Compra {
     id: number;
 
     @Column({
-        type: 'int'
+        type: 'double'
     })
-    precios: number;
+    valorCompra: number;
 
     @Column({
         type: 'double'
+    })
+    valorPagado: number;
+
+    @Column({
+        type: 'int'
     })
     cuota: number;
 
@@ -25,14 +31,22 @@ export class Compra {
     cuotaPagadas: number;
 
     @Column({
-        type: 'int'
-    })
-    cuotaDeuda: number;
-
-    @Column({
         type: 'date'
     })
     Fecha: Date;
+
+    @OneToOne(() => Inventario, { nullable: false })
+    @JoinColumn()
+    inventario: Inventario;
+
+    @ManyToOne(() => Cliente, (cliente) => cliente.id, { nullable: false })
+    cliente: Cliente;
+
+    @OneToMany(() => Transaccion, transaccion => transaccion, { nullable: false })
+    transacciones: Transaccion[];
+
+    @OneToMany(() => DetallesCompra, detallesCompra => detallesCompra.compra)
+    detalles: DetallesCompra[];
 
     @Column({
         type: 'tinyint',

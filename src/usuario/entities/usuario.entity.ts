@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TiposUsuario } from './tipos-usuario.entity';
+import { Caja } from "src/transaccion/entities";
 
 @Entity()
 export class Usuario {
@@ -9,7 +10,6 @@ export class Usuario {
         unsigned: true
     })
     id: number;
-
 
     @Column({
         type: 'bigint'
@@ -56,19 +56,23 @@ export class Usuario {
 
     @Column({
         type: 'varchar',
-        unique: true,
         length: 500
     })
     password: string;
 
-    @OneToMany(
+    @ManyToOne(
         () => TiposUsuario,
-        (TiposUsuario) => TiposUsuario.id,
-        { cascade: true }
-    )
-    idTipoUsuario: number;
+        (tiposUsuario) => tiposUsuario.id,
+        {
+            nullable: false,
+            cascade: true
+        })
+    tipoUsuario: TiposUsuario[];
 
-    
+    @OneToMany(
+    () => Caja, 
+    caja => caja.usuario)
+    caja: Caja[];
 
     @Column({
         type: 'tinyint',

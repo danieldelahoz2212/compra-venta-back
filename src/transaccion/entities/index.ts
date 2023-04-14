@@ -5,3 +5,5 @@ export { Transaccion } from './transaccion.entity';
 export { Traslado } from './traslado.entity';
 export { Compra } from './compra.entity';
 export { DetallesCompra } from './detalles-compra.entity';
+export { Almacen } from './almacen.entity';
+export { Cliente } from './cliente.entity';

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Caja, Inventario, Traslado } from './';
 
 @Entity({ name: 'Almacenes' })
 export class Almacen {
@@ -16,14 +17,12 @@ export class Almacen {
     })
     NIT: string;
 
-
     @Column({
         type: 'varchar',
         unique: true,
         length: 500
     })
     nombre: string;
-
 
     @Column({
         type: 'varchar',
@@ -42,11 +41,16 @@ export class Almacen {
 
 
     @Column({
-        type: 'varchar',
+        type: 'bigint',
         unique: true,
-        length: 500
     })
-    id_tipoAlmacen: string
+    id_tipoAlmacen: number
+
+    @OneToMany(() => Caja, caja => caja.almacen)
+    caja: Caja[];
+
+    @OneToMany(() => Inventario, inventario => inventario.ubicacion)
+    inventario: Inventario[];
 
     @Column({
         type: 'tinyint',

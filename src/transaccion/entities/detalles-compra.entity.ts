@@ -1,4 +1,5 @@
-const { Entity, Column, PrimaryGeneratedColumn } = require('typeorm');
+import { Compra } from "./";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class DetallesCompra {
@@ -23,6 +24,9 @@ export class DetallesCompra {
         type: 'datetime'
     })
     fecha: Date;
+
+    @ManyToOne(() => Compra,(compra) => compra.id,{ nullable: false } )
+    compra: Compra;
 
     @Column({
         type: 'tinyint',
