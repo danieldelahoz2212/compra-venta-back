@@ -4,6 +4,8 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { CreateTipoUsuarioDto } from './dto/create-tipo-usuario.dto';
 import { UpdateTipoUsuarioDto } from './dto/update-tipo-usuario.dto';
+import { CreatePermisoDto } from './dto/create-permiso.dto';
+import { CreateModuloAccionDto } from './dto/create-modulo-accion.dto';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -17,6 +19,16 @@ export class UsuarioController {
   @Post('createTipo')
   createTipoU(@Body() createTipoUsuarioDto: CreateTipoUsuarioDto) {
     return this.usuarioService.createTipoU(createTipoUsuarioDto);
+  }
+
+  @Post('createPermiso')
+  createPermiso(@Body() createPermisoDto: CreatePermisoDto) {
+    return this.usuarioService.createPermisos(createPermisoDto);
+  }
+
+  @Post('createModuloA')
+  createModuloAccion(@Body() createModuloAccion: CreateModuloAccionDto) {
+    return this.usuarioService.createModuloAccion(createModuloAccion);
   }
 
   @Get()
@@ -34,6 +46,16 @@ export class UsuarioController {
     return this.usuarioService.findOneTipo(+id);
   }
 
+  @Get('getP/:id')
+  findOnePermiso(@Param('id') id: string) {
+    return this.usuarioService.findOnePermiso(+id);
+  }
+
+  @Get('getM/:id')
+  findOneModuloA(@Param('id') id: string) {
+    return this.usuarioService.findOneModuloA(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     return this.usuarioService.update(+id, updateUsuarioDto);
@@ -47,5 +69,10 @@ export class UsuarioController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usuarioService.remove(+id);
+  }
+
+  @Delete('deleteP:id')
+  removePermiso(@Param('id') id: string) {
+    return this.usuarioService.removePermiso(+id);
   }
 }

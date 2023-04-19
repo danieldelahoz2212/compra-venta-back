@@ -1,7 +1,5 @@
 import { IsInt, IsOptional, IsPositive } from "class-validator";
 
-
-
 export class CreatePermisoDto {
 
     @IsInt()
@@ -11,11 +9,9 @@ export class CreatePermisoDto {
 
     @IsInt()
     @IsPositive()
-    tiposUsuario: number;
+    tipoUsuario: number;
 
     @IsInt()
     @IsPositive()
-    moduloaccion: number;
-
-
+    moduloAccion: number;
 }

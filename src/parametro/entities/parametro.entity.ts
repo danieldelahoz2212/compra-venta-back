@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ValorParametro } from "./valorParametro.entity";
+import { ValorParametro } from "./";
 
 @Entity()
 export class Parametro {

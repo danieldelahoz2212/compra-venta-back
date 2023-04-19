@@ -4,26 +4,22 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ParametroModule } from './parametro/parametro.module';
-require('dotenv').config();
+import { DatasourceConfig } from './config/data.source';
 
 
 @Module({
-  imports: [ 
-    ConfigModule.forRoot(),
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
 
+    }),
     TypeOrmModule.forRoot({
-      type: process.env.DB_TYPE as any,
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      database: process.env.DATABESE_NAME,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      synchronize: false,//false,
-      autoLoadEntities: true,
+      ...DatasourceConfig
     }),
     TransaccionModule,
     UsuarioModule,
-    ParametroModule, 
+    ParametroModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

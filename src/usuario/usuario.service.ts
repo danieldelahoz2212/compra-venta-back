@@ -13,7 +13,8 @@ import { ModuloAccione, Permiso, TiposUsuario, Usuario } from './entities';
 import { Repository } from 'typeorm';
 import { CreateTipoUsuarioDto } from './dto/create-tipo-usuario.dto';
 import { CreatePermisoDto } from './dto/create-permiso.dto';
-const bcrypt = require("bcrypt");;
+import { CreateModuloAccionDto } from './dto/create-modulo-accion.dto';
+const bcrypt = require("bcrypt");
 
 @Injectable()
 export class UsuarioService {
@@ -61,13 +62,33 @@ export class UsuarioService {
 
   async createPermisos(createPermisoDto: CreatePermisoDto) {
     try {
-      const permiso = this.permisoRepository.create(createPermisoDto);
+      const { tipoUsuario, moduloAccion } = createPermisoDto;
+      const tipoUsuario1 = await this.tiposUsuarioRepository.findOne({ where: { id: tipoUsuario }, });
+      const moduloAccion1 = await this.moduloARepository.findOne({ where: { id: moduloAccion }, });
+      const permiso = await this.permisoRepository.create({
+        ...createPermisoDto,
+        tipoUsuario: tipoUsuario1,
+        moduloAccion: moduloAccion1
+      });
       return await this.permisoRepository.save(permiso)
-
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
-    CodErrorUsuarioServices: 70`);
+    CodErrorUsuarioServices: 75`);
+    }
+  }
+
+  async createModuloAccion(createModuloAccionDto: CreateModuloAccionDto) {
+    try {
+      const { permisos } = createModuloAccionDto;
+      const permiso = await this.permisoRepository.findOne({ where: { id: permisos } })
+      const moduloAccion = await this.moduloARepository.create({
+        ...createModuloAccionDto,
+        permisos: permiso
+      })
+      return await this.moduloARepository.save(moduloAccion)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 90`);
     }
   }
 
@@ -76,19 +97,43 @@ export class UsuarioService {
   }
 
   async findOne(id: number) {
-    const usuario = await this.usuarioRepository.findOne({ where: { id }, relations:["tipoUsuario"]});
+    const usuario = await this.usuarioRepository.findOne({ where: { id }, relations: ["tipoUsuario"] });
     if (!usuario)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
-    CodErrorParametroServices: 65`)
+    CodErrorParametroServices: 102`)
     return usuario;
+  }
+
+  async findOnepermiso(id: number) {
+    const permiso = await this.permisoRepository.findOne({ where: { id }, relations: ["tipoUsuario", "modulo"] });
+    if (!permiso)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 111`)
+    return permiso;
   }
 
   async findOneTipo(id: number) {
     const tiposUsuario = await this.tiposUsuarioRepository.findOne({ where: { id } });
     if (!tiposUsuario)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
-    CodErrorParametroServices: 65`)
+    CodErrorParametroServices: 118`)
     return tiposUsuario;
+  }
+
+  async findOnePermiso(id: number) {
+    const permiso = await this.permisoRepository.findOne({ where: { id } });
+    if (!permiso)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 127`)
+    return permiso;
+  }
+
+  async findOneModuloA(id: number) {
+    const moduloAccion = await this.moduloARepository.findOne({ where: { id } });
+    if (!moduloAccion)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 134`)
+    return moduloAccion;
   }
 
   async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
@@ -106,7 +151,7 @@ export class UsuarioService {
         return await this.usuarioRepository.save(usuario);
       }
       throw new NotFoundException(`id ${id} de parametro no encontrado.
-    CodErrorParametroServices: 84`)
+    CodErrorParametroServices: 153`)
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -114,13 +159,13 @@ export class UsuarioService {
 
   async updateTipo(id: number, updateTipoUsuarioDto: UpdateTipoUsuarioDto) {
     try {
-      const tiposUsuario = await this.tiposUsuarioRepository.findOne({where:{ id }});
+      const tiposUsuario = await this.tiposUsuarioRepository.findOne({ where: { id } });
       if (tiposUsuario) {
         tiposUsuario.nombre = updateTipoUsuarioDto.nombre;
         return await this.tiposUsuarioRepository.save(tiposUsuario)
       }
       throw new NotFoundException(`id ${id} de parametro no encontrado.
-    CodErrorParametroServices: 99`)
+    CodErrorParametroServices: 168`)
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -128,27 +173,41 @@ export class UsuarioService {
 
   async remove(id: number) {
     try {
-      const usuario = await this.usuarioRepository.findOne({ where: { id }, relations:["tipoUsuario"] })
+      const usuario = await this.usuarioRepository.findOne({ where: { id }, relations: ["tipoUsuario"] })
       if (usuario) {
         usuario.estado = 0;
         return await this.usuarioRepository.save(usuario);
       }
       throw new NotFoundException(`id ${id} de parametro no encontrado.
-      CodErrorParametroServices: 102`)
+      CodErrorParametroServices: 181`)
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
-  async removetipo(id:number){
+  async removetipo(id: number) {
     try {
-      const tiposUsuario = await this.tiposUsuarioRepository.findOne({where:{id}})
-      if(tiposUsuario){
+      const tiposUsuario = await this.tiposUsuarioRepository.findOne({ where: { id } })
+      if (tiposUsuario) {
         tiposUsuario.estado = 0
         return await this.tiposUsuarioRepository.save(tiposUsuario)
       }
       throw new NotFoundException(`id ${id} de parametro no encontrado.
-      CodErrorParametroServices: 140`)
+      CodErrorParametroServices: 195`)
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
+  async removePermiso(id: number) {
+    try {
+      const permiso = await this.permisoRepository.findOne({ where: { id } })
+      if (permiso) {
+        permiso.estado = 0
+        return await this.tiposUsuarioRepository.save(permiso)
+      }
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 209`)
     } catch (error) {
       this.handleDBExceptions(error);
     }

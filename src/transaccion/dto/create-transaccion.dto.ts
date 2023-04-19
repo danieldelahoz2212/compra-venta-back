@@ -13,6 +13,10 @@ export class CreateTransaccionDto {
 
     @IsInt()
     @IsPositive()
+    caja: number;
+
+    @IsInt()
+    @IsPositive()
     compra: number;
 
     @IsInt()

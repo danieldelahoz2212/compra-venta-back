@@ -22,8 +22,9 @@ export class ModuloAccione {
     })
     idModulos: number;
 
-    @OneToMany(() => Permiso, permiso => permiso.id)
-    permisos: Permiso[];
+    @OneToMany(() => Permiso, 
+    permiso => permiso.id)
+    permisos: Permiso;
 
     @Column({
         type: 'tinyint',
