@@ -1,27 +1,28 @@
-import { IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
+import { IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
 
 
 
-export class CreateTransaccionDto {
+export class CreateCajaDto {
 
     @IsInt()
     @IsPositive()
     idTipoTransaccion: number;
 
+    @IsNumber()
+    valor: number;
+
     @IsDateString()
     fecha: string;
+    
+    @IsInt()
+    @IsNumber()
+    @IsPositive()
+    usuario: number;
 
     @IsInt()
+    @IsNumber()
     @IsPositive()
-    compra: number;
-
-    @IsInt()
-    @IsPositive()
-    venta: number;
-
-    @IsInt()
-    @IsPositive()
-    traslado: number;
+    almacen: number;
 
     @IsInt()
     @IsPositive()
