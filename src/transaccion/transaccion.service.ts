@@ -19,6 +19,8 @@ import { UpdateAlmacenDto } from './dto/update-almacen.dto';
 import { CreateCajaDto } from './dto/create-caja.dto';
 import { Usuario } from 'src/usuario/entities';
 import { UpdateCajaDto } from './dto/update-caja.dto';
+import { CreateClienteDto } from './dto/create-cliente.dto';
+import { UpdateClienteDto } from './dto/update-cliente.dto';
 
 @Injectable()
 export class TransaccionService {
@@ -106,6 +108,18 @@ export class TransaccionService {
     }
   }
 
+  async createCliente(createClienteDto: CreateClienteDto) {
+    try {
+    const cliente = await this.clienteRepository.create({
+      ...createClienteDto
+    })
+      return await this.clienteRepository.save(cliente)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 104`);
+    }
+  }
+
   findAll() {
     return this.transaccionRepository.find({ relations: ["compra", "venta", "traslado"] });
   }
@@ -116,6 +130,10 @@ export class TransaccionService {
 
   findAllCaja() {
     return this.cajaRepository.find({relations:["usuario", "almacen"]});
+  }
+
+  findAllCliente() {
+    return this.clienteRepository.find({});
   }
 
   async findOne(id: number) {
@@ -140,6 +158,14 @@ export class TransaccionService {
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 141`)
     return caja;
+  }
+
+  async findOneCliente(id: number) {
+    const cliente = await this.clienteRepository.findOne({ where: { id }});
+    if (!cliente)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 141`)
+    return cliente;
   }
 
   async update(id: number, updateTransaccionDto: UpdateTransaccionDto) {
@@ -181,8 +207,27 @@ export class TransaccionService {
         caja.idTipoTransaccion = updateCajaDto.idTipoTransaccion;
         caja.valor = updateCajaDto.valor;
         const fechaActual = new Date();
-        caja.fecha = fechaActual
+        caja.fecha = fechaActual;
         return await this.almacenRepository.save(caja);
+      }
+    } catch (error) {
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 188`)
+    }
+  }
+
+  async updateCliente(id: number, updateClienteDto: UpdateClienteDto) {
+    try {
+      const cliente = await this.clienteRepository.findOne({ where:{ id }});
+      if (cliente){
+        cliente.nombre = updateClienteDto.nombre;
+        cliente.apellido = updateClienteDto.apellido;
+        const fechaActual = new Date();
+        cliente.FechaNacimiento = fechaActual;
+        cliente.idTipoDocunento = updateClienteDto.idTipoDocunento;
+        cliente.numDocumento = updateClienteDto.numDocumento;
+        cliente.direccion = updateClienteDto.numTelefono;
+        return await this.almacenRepository.save(cliente);
       }
     } catch (error) {
       throw new NotFoundException(`id ${id} de parametro no encontrado.
@@ -231,6 +276,21 @@ export class TransaccionService {
       this.handleDBExceptions(error);
     }
   }
+
+  async removeCliente(id: number) {
+    try {
+      const cliente = await this.clienteRepository.findOne({ where: { id } })
+      if (cliente) {
+        cliente.estado = 0;
+        return await this.clienteRepository.save(cliente);
+      }
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 228`)
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
 
   private handleDBExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
