@@ -33,7 +33,7 @@ export class Compra {
     @Column({
         type: 'date'
     })
-    Fecha: Date;
+    fecha: Date;
 
     @OneToOne(() => Inventario, { nullable: false })
     @JoinColumn()

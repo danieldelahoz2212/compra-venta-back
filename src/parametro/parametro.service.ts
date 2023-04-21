@@ -28,11 +28,8 @@ export class ParametroService {
         ...parametroDetails,
         valores: valores.map(valor => this.valorParametroRepository.create({ valor_parametro: valor }))
       });
-
       await this.parametroRepository.save(parametro);
-
       return parametro;
-
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(`salto un error.
@@ -43,11 +40,9 @@ export class ParametroService {
   createValorParametro(createValorParametroDto: CreateValorParametroDto) {
     try {
       const valorParametro = new ValorParametro();
-
       valorParametro.valor_parametro = createValorParametroDto.valor_parametro;
       valorParametro.parametro = { id: createValorParametroDto.parametro } as Parametro;
       return this.valorParametroRepository.save(valorParametro);
-
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(`salto un error.
@@ -125,17 +120,6 @@ export class ParametroService {
     }
   }
 
-  // async deleteAll() {
-  //   const query = await this.parametroRepository.createQueryBuilder('parametro')
-  //   try {
-  //     return await query
-  //       .delete()
-  //       .where({})
-  //       .execute();
-  //   } catch (error) {
-  //     this.handleDBExceptions(error)
-  //   }
-  // }
 
   private handleDBExceptions(error: any) {
     if (error.code === '23505')

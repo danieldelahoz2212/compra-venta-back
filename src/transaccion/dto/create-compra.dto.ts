@@ -2,27 +2,31 @@ import { IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-val
 
 
 
-export class CreateCajaDto {
-
-    @IsInt()
-    @IsPositive()
-    idTipoTransaccion: number;
+export class CreateCompraDto {
 
     @IsNumber()
-    valor: number;
+    valorCompra: number;
+
+    @IsNumber()
+    valorPagado: number;
+
+    @IsInt()
+    @IsNumber()
+    @IsPositive()
+    cuota: number;
+
+    @IsInt()
+    @IsNumber()
+    @IsPositive()
+    cuotaPagadas: number;
 
     @IsDateString()
     fecha: string;
 
     @IsInt()
-    @IsNumber()
     @IsPositive()
-    usuario: number;
-
-    @IsInt()
-    @IsNumber()
-    @IsPositive()
-    almacen: number;
+    @IsOptional()
+    cliente: number;
 
     @IsInt()
     @IsPositive()

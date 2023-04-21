@@ -4,15 +4,15 @@ import { IsArray, IsDateString, IsInt, IsNumber, IsOptional, IsPositive, IsStrin
 
 export class CreateInventarioDto {
 
-    @IsString()
-    ubicacion: string;
+    @IsInt()
+    @IsNumber()
+    @IsPositive()
+    ubicacion: number;
 
-    @IsString()
-    origenCompra: string;
-
-    @IsString({ each: true })
-    @IsArray()
-    valores: string[];
+    @IsInt()
+    @IsNumber()
+    @IsPositive()
+    origenCompra: number;
 
     @IsString()
     nombre: string;

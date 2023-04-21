@@ -21,6 +21,14 @@ import { Usuario } from 'src/usuario/entities';
 import { UpdateCajaDto } from './dto/update-caja.dto';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
+import { CreateCompraDto } from './dto/create-compra.dto';
+import { UpdateCompraDto } from './dto/update-compra.dto';
+import { CreateDetallesCompraDto } from './dto/create-detalles-compra.dto';
+import { UpdateDetallesCompra } from './dto/update-detalles-compra.dto';
+import { CreateInventarioDto } from './dto/create-inventario.dto';
+import { UpdateInventarioDto } from './dto/update-inventario.dto';
+import { CreateTrasladoDto } from './dto/create-traslado.dto';
+import { UpdateTrasladoDto } from './dto/update-traslado.dto';
 
 @Injectable()
 export class TransaccionService {
@@ -56,7 +64,7 @@ export class TransaccionService {
     private readonly ventaRepository: Repository<Venta>,
 
     @InjectRepository(Usuario)
-    private readonly usuarioRepository: Repository<Usuario>,
+    private readonly usuarioRepository: Repository<Usuario>
 
   ) { }
 
@@ -120,6 +128,72 @@ export class TransaccionService {
     }
   }
 
+  async createCompra(createCompraDto: CreateCompraDto) {
+    try {
+    const {cliente} = createCompraDto
+    const clientes = await this.clienteRepository.findOne({where:{id:cliente}});
+    const compra = await this.compraRepository.create({
+      ...createCompraDto,
+      cliente:clientes
+    })
+      return await this.compraRepository.save(compra)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 134`);
+    }
+  }
+
+  async createDetallesCompra(createDetallesCompraDto: CreateDetallesCompraDto) {
+    try {
+    const {compra} = createDetallesCompraDto
+    const compras = await this.detallesCRepository.findOne({where:{id:compra}});
+    const detallesCompra = await this.detallesCRepository.create({
+      ...createDetallesCompraDto,
+      compra:compras
+    })
+      return await this.detallesCRepository.save(detallesCompra)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 151`);
+    }
+  }
+
+  async createInventario(createInventarioDto: CreateInventarioDto) {
+    try {
+    const {ubicacion, origenCompra} = createInventarioDto
+    const ubicaciones = await this.almacenRepository.findOne({where:{id:ubicacion}});
+    const origenCompras = await this.almacenRepository.findOne({where:{id:origenCompra}})
+    const inventario = this.inventarioRepository.create({
+      ...createInventarioDto,
+      ubicacion: ubicaciones,
+      origenCompra: origenCompras
+    })
+      return await this.inventarioRepository.save(inventario)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 151`);
+    }
+  }
+
+  async createTraslado(createTrasladoDto: CreateTrasladoDto) {
+    try {
+    const {almacenDestino, almacenOrigen, inventario} = createTrasladoDto
+    const almacenDestinos = await this.almacenRepository.findOne({where:{id:almacenDestino}});
+    const almacenOrigenes = await this.almacenRepository.findOne({where:{id:almacenOrigen}});
+    const inventarios = await this.inventarioRepository.findOne({where:{id:inventario}})
+    const traslado = this.trasladoRepository.create({
+      ...createTrasladoDto,
+      almacenDestino:almacenDestinos,
+      almacenOrigen: almacenOrigenes,
+      inventario: inventarios
+    })
+      return await this.trasladoRepository.save(traslado)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 151`);
+    }
+  }
+
   findAll() {
     return this.transaccionRepository.find({ relations: ["compra", "venta", "traslado"] });
   }
@@ -134,6 +208,22 @@ export class TransaccionService {
 
   findAllCliente() {
     return this.clienteRepository.find({});
+  }
+
+  findAllCompra() {
+    return this.compraRepository.find({relations:["cliente"]});
+  }
+
+  findAllDetallesCompra() {
+    return this.detallesCRepository.find({relations:["compra"]});
+  }
+
+  findAllInventario() {
+    return this.inventarioRepository.find({relations:["ubicacion", "origenCompra"]});
+  }
+
+  findAllTraslado() {
+    return this.trasladoRepository.find({relations:["almacenDestino", "almacenOrigen", "inventario"]});
   }
 
   async findOne(id: number) {
@@ -166,6 +256,38 @@ export class TransaccionService {
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 141`)
     return cliente;
+  }
+
+  async findOneCompra(id: number) {
+    const compra = await this.compraRepository.findOne({ where: { id }, relations:["cliente"]});
+    if (!compra)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 194`)
+    return compra;
+  }
+
+  async findOneDetallesCompra(id: number) {
+    const detallesCompra = await this.detallesCRepository.findOne({ where: { id }, relations:["compra"]});
+    if (!detallesCompra)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 194`)
+    return detallesCompra;
+  }
+
+  async findOneInventario(id: number) {
+    const inventario = await this.inventarioRepository.findOne({ where: { id }, relations:["usuario", "almacen"]});
+    if (!inventario)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 194`)
+    return inventario;
+  }
+
+  async findOneTraslado(id: number) {
+    const traslado = await this.inventarioRepository.findOne({ where: { id }, relations:["almacenDestino", "almacenOrigen", "inventario"]});
+    if (!traslado)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 194`)
+    return traslado;
   }
 
   async update(id: number, updateTransaccionDto: UpdateTransaccionDto) {
@@ -208,7 +330,7 @@ export class TransaccionService {
         caja.valor = updateCajaDto.valor;
         const fechaActual = new Date();
         caja.fecha = fechaActual;
-        return await this.almacenRepository.save(caja);
+        return await this.cajaRepository.save(caja);
       }
     } catch (error) {
       throw new NotFoundException(`id ${id} de parametro no encontrado.
@@ -218,7 +340,7 @@ export class TransaccionService {
 
   async updateCliente(id: number, updateClienteDto: UpdateClienteDto) {
     try {
-      const cliente = await this.clienteRepository.findOne({ where:{ id }});
+      const cliente = await this.clienteRepository.findOne({ where:{ id } });
       if (cliente){
         cliente.nombre = updateClienteDto.nombre;
         cliente.apellido = updateClienteDto.apellido;
@@ -227,11 +349,76 @@ export class TransaccionService {
         cliente.idTipoDocunento = updateClienteDto.idTipoDocunento;
         cliente.numDocumento = updateClienteDto.numDocumento;
         cliente.direccion = updateClienteDto.numTelefono;
-        return await this.almacenRepository.save(cliente);
+        return await this.clienteRepository.save(cliente);
       }
     } catch (error) {
       throw new NotFoundException(`id ${id} de parametro no encontrado.
       CodErrorParametroServices: 188`)
+    }
+  }
+
+  async updateCompra(id: number, updateCompraDto: UpdateCompraDto) {
+    try {
+      const compra = await this.compraRepository.findOne({ where:{ id } });
+      if (compra){
+        compra.valorCompra = updateCompraDto.valorCompra;
+        compra.valorPagado = updateCompraDto.valorPagado;
+        compra.cuota = updateCompraDto.cuota;
+        compra.cuotaPagadas = updateCompraDto.cuotaPagadas;
+        const fechaActual = new Date();
+        compra.fecha = fechaActual;
+        return await this.compraRepository.save(compra);
+      }
+    } catch (error) {
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 280`)
+    }
+  }
+
+  async updateDetallesCompra(id: number, updateDetallesCompraDto: UpdateDetallesCompra) {
+    try {
+      const detallesCompra = await this.detallesCRepository.findOne({ where:{ id } });
+      if (detallesCompra){
+        detallesCompra.idTipoDPago = updateDetallesCompraDto.idTipoDPago;
+        detallesCompra.valorPagado = updateDetallesCompraDto.valorPagado;
+        const fechaActual = new Date();
+        detallesCompra.fecha = fechaActual;
+        return await this.compraRepository.save(detallesCompra);
+      }
+    } catch (error) {
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 280`)
+    }
+  }
+
+  async updateInventario(id: number, updateInventarioDto: UpdateInventarioDto) {
+    try {
+      const inventario = await this.inventarioRepository.findOne({ where:{ id } });
+      if (inventario){
+        inventario.nombre = updateInventarioDto.nombre;
+        inventario.descripcion = updateInventarioDto.descripcion;
+        inventario.idTipoObjeto = updateInventarioDto.idTipoObjeto;
+        const fechaActual = new Date();
+        inventario.fechaDeEntrada = fechaActual;
+        return await this.compraRepository.save(inventario);
+      }
+    } catch (error) {
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 280`)
+    }
+  }
+
+  async updateTraslado(id: number, updateTrasladoDto: UpdateTrasladoDto) {
+    try {
+      const traslado = await this.trasladoRepository.findOne({ where:{ id } });
+      if (traslado){
+        const fechaActual = new Date();
+        traslado.fecha = fechaActual;
+        return await this.trasladoRepository.save(traslado);
+      }
+    } catch (error) {
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 280`)
     }
   }
 
@@ -268,7 +455,7 @@ export class TransaccionService {
       const caja = await this.cajaRepository.findOne({ where: { id } })
       if (caja) {
         caja.estado = 0;
-        return await this.almacenRepository.save(caja);
+        return await this.cajaRepository.save(caja);
       }
       throw new NotFoundException(`id ${id} de parametro no encontrado.
       CodErrorParametroServices: 228`)
@@ -291,6 +478,47 @@ export class TransaccionService {
     }
   }
 
+  async removeCompra(id: number) {
+    try {
+      const compra = await this.compraRepository.findOne({ where: { id } })
+      if (compra) {
+        compra.estado = 0;
+        return await this.clienteRepository.save(compra);
+      }
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 228`)
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
+  async removeInventario(id: number) {
+    try {
+      const inventario = await this.inventarioRepository.findOne({ where: { id } })
+      if (inventario) {
+        inventario.estado = 0;
+        return await this.clienteRepository.save(inventario);
+      }
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 228`)
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
+  async removeTraslado(id: number) {
+    try {
+      const traslado = await this.trasladoRepository.findOne({ where: { id } })
+      if (traslado) {
+        traslado.estado = 0;
+        return await this.clienteRepository.save(traslado);
+      }
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 228`)
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
 
   private handleDBExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
