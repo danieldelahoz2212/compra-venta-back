@@ -29,6 +29,8 @@ import { CreateInventarioDto } from './dto/create-inventario.dto';
 import { UpdateInventarioDto } from './dto/update-inventario.dto';
 import { CreateTrasladoDto } from './dto/create-traslado.dto';
 import { UpdateTrasladoDto } from './dto/update-traslado.dto';
+import { CreateVentaDto } from './dto/create-venta.dto';
+import { UpdateVentaDto } from './dto/update-venta.dto';
 
 @Injectable()
 export class TransaccionService {
@@ -194,6 +196,21 @@ export class TransaccionService {
     }
   }
 
+  async createVenta(createVentaDto: CreateVentaDto) {
+    try {
+    const {cliente} = createVentaDto
+    const clientes = await this.clienteRepository.findOne({where:{id:cliente}});
+    const venta = this.ventaRepository.create({
+      ...createVentaDto,
+      cliente: clientes
+    })
+      return await this.ventaRepository.save(venta)
+    } catch (error) {
+      throw new InternalServerErrorException(`no se pudo registrar usaurio. 
+    CodErrorUsuarioServices: 151`);
+    }
+  }
+
   findAll() {
     return this.transaccionRepository.find({ relations: ["compra", "venta", "traslado"] });
   }
@@ -224,6 +241,10 @@ export class TransaccionService {
 
   findAllTraslado() {
     return this.trasladoRepository.find({relations:["almacenDestino", "almacenOrigen", "inventario"]});
+  }
+
+  findAllVenta() {
+    return this.ventaRepository.find({relations:["cliente"]});
   }
 
   async findOne(id: number) {
@@ -288,6 +309,14 @@ export class TransaccionService {
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 194`)
     return traslado;
+  }
+
+  async findOneVenta(id: number) {
+    const venta = await this.ventaRepository.findOne({ where: { id }, relations:["cliente"]});
+    if (!venta)
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+    CodErrorParametroServices: 194`)
+    return venta;
   }
 
   async update(id: number, updateTransaccionDto: UpdateTransaccionDto) {
@@ -422,6 +451,19 @@ export class TransaccionService {
     }
   }
 
+  async updateVenta(id: number, updateVentaDto: UpdateVentaDto) {
+    try {
+      const venta = await this.ventaRepository.findOne({ where:{ id } });
+      if (venta){
+        venta.valor = updateVentaDto.valor;
+        return await this.trasladoRepository.save(venta);
+      }
+    } catch (error) {
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 280`)
+    }
+  }
+
   async remove(id: number) {
     try {
       const transaccion = await this.transaccionRepository.findOne({ where: { id } })
@@ -512,6 +554,20 @@ export class TransaccionService {
       if (traslado) {
         traslado.estado = 0;
         return await this.clienteRepository.save(traslado);
+      }
+      throw new NotFoundException(`id ${id} de parametro no encontrado.
+      CodErrorParametroServices: 228`)
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
+  async removeVenta(id: number) {
+    try {
+      const venta = await this.ventaRepository.findOne({ where: { id } })
+      if (venta) {
+        venta.estado = 0;
+        return await this.ventaRepository.save(venta);
       }
       throw new NotFoundException(`id ${id} de parametro no encontrado.
       CodErrorParametroServices: 228`)
