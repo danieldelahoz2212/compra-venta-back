@@ -24,7 +24,7 @@ import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { CreateCompraDto } from './dto/create-compra.dto';
 import { UpdateCompraDto } from './dto/update-compra.dto';
 import { CreateDetallesCompraDto } from './dto/create-detalles-compra.dto';
-import { UpdateDetallesCompra } from './dto/update-detalles-compra.dto';
+import { UpdateDetallesCompraDto } from './dto/update-detalles-compra.dto';
 import { CreateInventarioDto } from './dto/create-inventario.dto';
 import { UpdateInventarioDto } from './dto/update-inventario.dto';
 import { CreateTrasladoDto } from './dto/create-traslado.dto';
@@ -404,7 +404,7 @@ export class TransaccionService {
     }
   }
 
-  async updateDetallesCompra(id: number, updateDetallesCompraDto: UpdateDetallesCompra) {
+  async updateDetallesCompra(id: number, updateDetallesCompraDto: UpdateDetallesCompraDto) {
     try {
       const detallesCompra = await this.detallesCRepository.findOne({ where:{ id } });
       if (detallesCompra){

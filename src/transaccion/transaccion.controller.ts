@@ -10,6 +10,14 @@ import { CreateDetallesCompraDto } from './dto/create-detalles-compra.dto';
 import { CreateInventarioDto } from './dto/create-inventario.dto';
 import { CreateTrasladoDto } from './dto/create-traslado.dto';
 import { CreateVentaDto } from './dto/create-venta.dto';
+import { UpdateAlmacenDto } from './dto/update-almacen.dto';
+import { UpdateCajaDto } from './dto/update-caja.dto';
+import { UpdateClienteDto } from './dto/update-cliente.dto';
+import { UpdateCompraDto } from './dto/update-compra.dto';
+import { UpdateDetallesCompraDto } from './dto/update-detalles-compra.dto';
+import { UpdateInventarioDto } from './dto/update-inventario.dto';
+import { UpdateTrasladoDto } from './dto/update-traslado.dto';
+import { UpdateVentaDto } from './dto/update-venta.dto';
 
 @Controller('transaccion')
 export class TransaccionController {
@@ -148,6 +156,46 @@ export class TransaccionController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTransaccionDto: UpdateTransaccionDto) {
     return this.transaccionService.update(+id, updateTransaccionDto);
+  }
+
+  @Patch('almacen/:id')
+  updateAlmacen(@Param('id') id: string, @Body() updateAlmacenDto: UpdateAlmacenDto) {
+    return this.transaccionService.updateAlmacen(+id, updateAlmacenDto);
+  }
+
+  @Patch('caja/:id')
+  updateCaja(@Param('id') id: string, @Body() updateCajaDto: UpdateCajaDto) {
+    return this.transaccionService.updateCaja(+id, updateCajaDto);
+  }
+
+  @Patch('cliente/:id')
+  updateCliente(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
+    return this.transaccionService.updateCliente(+id, updateClienteDto);
+  }
+
+  @Patch('compra/:id')
+  updateCompra(@Param('id') id: string, @Body() updateCompraDto: UpdateCompraDto) {
+    return this.transaccionService.updateCompra(+id, updateCompraDto);
+  }
+
+  @Patch('detalles-compra/:id')
+  updateDetallesCompra(@Param('id') id: string, @Body() updateDetallesCompraDto: UpdateDetallesCompraDto) {
+    return this.transaccionService.updateDetallesCompra(+id, updateDetallesCompraDto);
+  }
+
+  @Patch('inventario/:id')
+  updateInventario(@Param('id') id: string, @Body() updateInventarioDto: UpdateInventarioDto) {
+    return this.transaccionService.updateInventario(+id, updateInventarioDto);
+  }
+
+  @Patch('traslado/:id')
+  updateTraslado(@Param('id') id: string, @Body() updateTrasladoDto: UpdateTrasladoDto) {
+    return this.transaccionService.updateTraslado(+id, updateTrasladoDto);
+  }
+
+  @Patch('venta/:id')
+  updateVenta(@Param('id') id: string, @Body() updateVentaDto: UpdateVentaDto) {
+    return this.transaccionService.updateVenta(+id, updateVentaDto);
   }
 
   @Delete(':id')

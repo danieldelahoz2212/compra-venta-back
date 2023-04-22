@@ -15,7 +15,7 @@ export const DatasourceConfig: DataSourceOptions ={
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       synchronize: false,//false,
-    //   autoLoadEntities: true,
+      // autoLoadEntities: true,
       migrationsRun:true,
       logging:false,
       entities: [__dirname+'/../**/**/entities/*.entity.ts}'],
