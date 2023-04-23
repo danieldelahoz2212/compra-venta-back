@@ -202,4 +202,39 @@ export class TransaccionController {
   remove(@Param('id') id: string) {
     return this.transaccionService.remove(+id);
   }
+
+  @Delete('almacen/:id')
+  removeAlmacen(@Param('id') id: string) {
+    return this.transaccionService.removeAlmacen(+id);
+  }
+
+  @Delete('caja/:id')
+  removeCaja(@Param('id') id: string) {
+    return this.transaccionService.removeCaja(+id);
+  }
+
+  @Delete('cliente/:id')
+  removeCliente(@Param('id') id: string) {
+    return this.transaccionService.removeCliente(+id);
+  }
+
+  @Delete('compra/:id')
+  removeCompra(@Param('id') id: string) {
+    return this.transaccionService.removeCompra(+id);
+  }
+
+  @Delete('inventario/:id')
+  removeInventario(@Param('id') id: string) {
+    return this.transaccionService.removeInventario(+id);
+  }
+
+  @Delete('traslado/:id')
+  removeTraslado(@Param('id') id: string) {
+    return this.transaccionService.removeTraslado(+id);
+  }
+
+  @Delete('venta/:id')
+  removeVenta(@Param('id') id: string) {
+    return this.transaccionService.removeVenta(+id);
+  }
 }
