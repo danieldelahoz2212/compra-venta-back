@@ -11,17 +11,17 @@ export class CreateTransaccionDto {
     @IsDateString()
     fecha: string;
 
-    @IsInt()
-    @IsPositive()
-    compra: number;
+    // @IsInt()
+    // @IsPositive()
+    // compra: number;
 
-    @IsInt()
-    @IsPositive()
-    venta: number;
+    // @IsInt()
+    // @IsPositive()
+    // venta: number;
 
-    @IsInt()
-    @IsPositive()
-    traslado: number;
+    // @IsInt()
+    // @IsPositive()
+    // traslado: number;
 
     @IsInt()
     @IsPositive()

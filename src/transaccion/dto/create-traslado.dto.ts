@@ -7,6 +7,11 @@ export class CreateTrasladoDto {
     @IsInt()
     @IsPositive()
     @IsOptional()
+    transaccionId: number;
+
+    @IsInt()
+    @IsPositive()
+    @IsOptional()
     almacenDestino: number;
 
     @IsInt()

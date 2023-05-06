@@ -12,11 +12,6 @@ export class Caja {
     id: number;
 
     @Column({
-        type: 'bigint'
-    })
-    idTipoTransaccion: number;
-
-    @Column({
         type: 'double'
     })
     valor: number;

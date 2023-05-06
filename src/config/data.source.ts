@@ -14,13 +14,11 @@ export const DatasourceConfig: DataSourceOptions = {
     database: process.env.DATABESE_NAME,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    synchronize: false,//false,
-    // autoLoadEntities: true,
+    synchronize: false,
     migrationsRun: true,
     logging: false,
     entities: [__dirname + '/../**/**/entities/*.entity.ts}'],
     migrations: [__dirname + '/../**/**/*.migrations{.ts,.js}'],
-    //namingStrategy: new SnakeNamingStrategy(),
 };
 
 export const AppDs = new DataSource(DatasourceConfig);

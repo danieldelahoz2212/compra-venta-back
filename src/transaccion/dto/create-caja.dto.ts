@@ -6,7 +6,8 @@ export class CreateCajaDto {
 
     @IsInt()
     @IsPositive()
-    idTipoTransaccion: number;
+    @IsOptional()
+    transaccionId: number;
 
     @IsNumber()
     valor: number;

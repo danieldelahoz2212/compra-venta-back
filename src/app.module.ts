@@ -12,10 +12,10 @@ import { DatasourceConfig } from './config/data.source';
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
-
     }),
     TypeOrmModule.forRoot({
-      ...DatasourceConfig
+      ...DatasourceConfig,
+      autoLoadEntities:true,
     }),
     TransaccionModule,
     UsuarioModule,

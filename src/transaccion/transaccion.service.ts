@@ -31,11 +31,12 @@ import { CreateTrasladoDto } from './dto/create-traslado.dto';
 import { UpdateTrasladoDto } from './dto/update-traslado.dto';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { UpdateVentaDto } from './dto/update-venta.dto';
+import { ParametroService } from 'src/parametro/parametro.service';
 
 @Injectable()
 export class TransaccionService {
 
-  private readonly logger = new Logger('UsuarioService');
+  private readonly logger = new Logger('TransaccionService');
 
   constructor(
     @InjectRepository(Inventario)
@@ -66,23 +67,56 @@ export class TransaccionService {
     private readonly ventaRepository: Repository<Venta>,
 
     @InjectRepository(Usuario)
-    private readonly usuarioRepository: Repository<Usuario>
+    private readonly usuarioRepository: Repository<Usuario>,
 
+    private readonly parametroService: ParametroService
   ) { }
 
-  async create(createTransaccionDto: CreateTransaccionDto) {
+  async create(createTransaccionDto: CreateTransaccionDto, createCajaDto: CreateCajaDto, createTransaccion: CreateCompraDto | CreateVentaDto | CreateTrasladoDto) {
     try {
-      const { compra, venta, traslado } = createTransaccionDto;
-      const compra1 = await this.compraRepository.findOne({where:{id: compra}});
-      const venta1 = await this.ventaRepository.findOne({where:{id: venta}});
-      const traslado1 = await this.transaccionRepository.findOne({where:{id: traslado}});
+      const typeTransaccion = await this.parametroService.valorParametroRepository.findOne({ where: { id: createTransaccionDto.idTipoTransaccion } });
+
       const transaccion = await this.transaccionRepository.create({
-        ...createTransaccionDto,
-        compra: compra1,
-        venta: venta1,
-        traslado: traslado1
+        ...createTransaccionDto
       });
-      return await this.transaccionRepository.save(transaccion)
+      const caja = await this.createCaja({ ...createCajaDto, transaccionId: transaccion.id })
+      // 
+      let operacion;
+      let resultOperacion;
+      switch (typeTransaccion.valor_parametro) {
+        case 'Compra':
+          operacion = await this.createCompra({ ...createTransaccion, transaccionId: transaccion.id } as CreateCompraDto);
+          break;
+        case 'Venta':
+          operacion = await this.createVenta({ ...createTransaccion, transaccionId: transaccion.id } as CreateVentaDto);
+          break;
+        case 'Traslado':
+          operacion = await this.createTraslado({ ...createTransaccion, transaccionId: transaccion.id } as CreateTrasladoDto);
+          break;
+      }
+
+      if (!operacion) {
+        new Error('Ocurrio un problema al registrar la transaccion');
+      }
+      const resultTransaccion = await this.transaccionRepository.save(transaccion);
+      const resultCaja = await this.cajaRepository.save(caja);
+      switch (typeTransaccion.valor_parametro) {
+        case 'Compra':
+          resultOperacion = await this.compraRepository.save(operacion);
+          break;
+        case 'Venta':
+          resultOperacion = await this.ventaRepository.save(operacion);
+          break;
+        case 'Traslado':
+          resultOperacion = await this.trasladoRepository.save(operacion);
+          break;
+      }
+
+      return {
+        resultTransaccion,
+        resultCaja,
+        resultOperacion
+      }
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
     CodErrorUsuarioServices: 76`);
@@ -104,14 +138,14 @@ export class TransaccionService {
   async createCaja(createCajaDto: CreateCajaDto) {
     try {
       const { usuario, almacen } = createCajaDto;
-      const usuario1 = await this.usuarioRepository.findOne({where:{id:usuario }});
-      const almacen1 = await this.almacenRepository.findOne({where:{id:almacen}});
-      const transaccion = await this.cajaRepository.create({
+      const usuario1 = await this.usuarioRepository.findOne({ where: { id: usuario } });
+      const almacen1 = await this.almacenRepository.findOne({ where: { id: almacen } });
+      const caja = await this.cajaRepository.create({
         ...createCajaDto,
         usuario: usuario1,
         almacen: almacen1
       });
-      return await this.cajaRepository.save(transaccion)
+      return caja
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
     CodErrorUsuarioServices: 104`);
@@ -120,9 +154,9 @@ export class TransaccionService {
 
   async createCliente(createClienteDto: CreateClienteDto) {
     try {
-    const cliente = await this.clienteRepository.create({
-      ...createClienteDto
-    })
+      const cliente = await this.clienteRepository.create({
+        ...createClienteDto
+      })
       return await this.clienteRepository.save(cliente)
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
@@ -132,13 +166,13 @@ export class TransaccionService {
 
   async createCompra(createCompraDto: CreateCompraDto) {
     try {
-    const {cliente} = createCompraDto
-    const clientes = await this.clienteRepository.findOne({where:{id:cliente}});
-    const compra = await this.compraRepository.create({
-      ...createCompraDto,
-      cliente:clientes
-    })
-      return await this.compraRepository.save(compra)
+      const { cliente } = createCompraDto
+      const clientes = await this.clienteRepository.findOne({ where: { id: cliente } });
+      const compra = await this.compraRepository.create({
+        ...createCompraDto,
+        cliente: clientes
+      })
+      return compra;
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
     CodErrorUsuarioServices: 134`);
@@ -147,12 +181,12 @@ export class TransaccionService {
 
   async createDetallesCompra(createDetallesCompraDto: CreateDetallesCompraDto) {
     try {
-    const {compra} = createDetallesCompraDto
-    const compras = await this.detallesCRepository.findOne({where:{id:compra}});
-    const detallesCompra = await this.detallesCRepository.create({
-      ...createDetallesCompraDto,
-      compra:compras
-    })
+      const { compra } = createDetallesCompraDto
+      const compras = await this.detallesCRepository.findOne({ where: { id: compra } });
+      const detallesCompra = await this.detallesCRepository.create({
+        ...createDetallesCompraDto,
+        compra: compras
+      })
       return await this.detallesCRepository.save(detallesCompra)
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
@@ -162,14 +196,14 @@ export class TransaccionService {
 
   async createInventario(createInventarioDto: CreateInventarioDto) {
     try {
-    const {ubicacion, origenCompra} = createInventarioDto
-    const ubicaciones = await this.almacenRepository.findOne({where:{id:ubicacion}});
-    const origenCompras = await this.almacenRepository.findOne({where:{id:origenCompra}})
-    const inventario = this.inventarioRepository.create({
-      ...createInventarioDto,
-      ubicacion: ubicaciones,
-      origenCompra: origenCompras
-    })
+      const { ubicacion, origenCompra } = createInventarioDto
+      const ubicaciones = await this.almacenRepository.findOne({ where: { id: ubicacion } });
+      const origenCompras = await this.almacenRepository.findOne({ where: { id: origenCompra } })
+      const inventario = this.inventarioRepository.create({
+        ...createInventarioDto,
+        ubicacion: ubicaciones,
+        origenCompra: origenCompras
+      })
       return await this.inventarioRepository.save(inventario)
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
@@ -179,17 +213,17 @@ export class TransaccionService {
 
   async createTraslado(createTrasladoDto: CreateTrasladoDto) {
     try {
-    const {almacenDestino, almacenOrigen, inventario} = createTrasladoDto
-    const almacenDestinos = await this.almacenRepository.findOne({where:{id:almacenDestino}});
-    const almacenOrigenes = await this.almacenRepository.findOne({where:{id:almacenOrigen}});
-    const inventarios = await this.inventarioRepository.findOne({where:{id:inventario}})
-    const traslado = this.trasladoRepository.create({
-      ...createTrasladoDto,
-      almacenDestino:almacenDestinos,
-      almacenOrigen: almacenOrigenes,
-      inventario: inventarios
-    })
-      return await this.trasladoRepository.save(traslado)
+      const { almacenDestino, almacenOrigen, inventario } = createTrasladoDto
+      const almacenDestinos = await this.almacenRepository.findOne({ where: { id: almacenDestino } });
+      const almacenOrigenes = await this.almacenRepository.findOne({ where: { id: almacenOrigen } });
+      const inventarios = await this.inventarioRepository.findOne({ where: { id: inventario } })
+      const traslado = this.trasladoRepository.create({
+        ...createTrasladoDto,
+        almacenDestino: almacenDestinos,
+        almacenOrigen: almacenOrigenes,
+        inventario: inventarios
+      })
+      return traslado
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
     CodErrorUsuarioServices: 151`);
@@ -198,13 +232,13 @@ export class TransaccionService {
 
   async createVenta(createVentaDto: CreateVentaDto) {
     try {
-    const {cliente} = createVentaDto
-    const clientes = await this.clienteRepository.findOne({where:{id:cliente}});
-    const venta = this.ventaRepository.create({
-      ...createVentaDto,
-      cliente: clientes
-    })
-      return await this.ventaRepository.save(venta)
+      const { cliente } = createVentaDto
+      const clientes = await this.clienteRepository.findOne({ where: { id: cliente } });
+      const venta = this.ventaRepository.create({
+        ...createVentaDto,
+        cliente: clientes
+      })
+      return venta;
     } catch (error) {
       throw new InternalServerErrorException(`no se pudo registrar usaurio. 
     CodErrorUsuarioServices: 151`);
@@ -220,7 +254,7 @@ export class TransaccionService {
   }
 
   findAllCaja() {
-    return this.cajaRepository.find({relations:["usuario", "almacen"]});
+    return this.cajaRepository.find({ relations: ["usuario", "almacen"] });
   }
 
   findAllCliente() {
@@ -228,23 +262,23 @@ export class TransaccionService {
   }
 
   findAllCompra() {
-    return this.compraRepository.find({relations:["cliente"]});
+    return this.compraRepository.find({ relations: ["cliente"] });
   }
 
   findAllDetallesCompra() {
-    return this.detallesCRepository.find({relations:["compra"]});
+    return this.detallesCRepository.find({ relations: ["compra"] });
   }
 
   findAllInventario() {
-    return this.inventarioRepository.find({relations:["ubicacion", "origenCompra"]});
+    return this.inventarioRepository.find({ relations: ["ubicacion", "origenCompra"] });
   }
 
   findAllTraslado() {
-    return this.trasladoRepository.find({relations:["almacenDestino", "almacenOrigen", "inventario"]});
+    return this.trasladoRepository.find({ relations: ["almacenDestino", "almacenOrigen", "inventario"] });
   }
 
   findAllVenta() {
-    return this.ventaRepository.find({relations:["cliente"]});
+    return this.ventaRepository.find({ relations: ["cliente"] });
   }
 
   async findOne(id: number) {
@@ -256,7 +290,7 @@ export class TransaccionService {
   }
 
   async findOneAlmacen(id: number) {
-    const almacen = await this.almacenRepository.findOne({ where: { id }});
+    const almacen = await this.almacenRepository.findOne({ where: { id } });
     if (!almacen)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 132`)
@@ -264,7 +298,7 @@ export class TransaccionService {
   }
 
   async findOneCaja(id: number) {
-    const caja = await this.cajaRepository.findOne({ where: { id }, relations:["usuario", "almacen"] });
+    const caja = await this.cajaRepository.findOne({ where: { id }, relations: ["usuario", "almacen"] });
     if (!caja)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 141`)
@@ -272,7 +306,7 @@ export class TransaccionService {
   }
 
   async findOneCliente(id: number) {
-    const cliente = await this.clienteRepository.findOne({ where: { id }});
+    const cliente = await this.clienteRepository.findOne({ where: { id } });
     if (!cliente)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 141`)
@@ -280,7 +314,7 @@ export class TransaccionService {
   }
 
   async findOneCompra(id: number) {
-    const compra = await this.compraRepository.findOne({ where: { id }, relations:["cliente"]});
+    const compra = await this.compraRepository.findOne({ where: { id }, relations: ["cliente"] });
     if (!compra)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 194`)
@@ -288,7 +322,7 @@ export class TransaccionService {
   }
 
   async findOneDetallesCompra(id: number) {
-    const detallesCompra = await this.detallesCRepository.findOne({ where: { id }, relations:["compra"]});
+    const detallesCompra = await this.detallesCRepository.findOne({ where: { id }, relations: ["compra"] });
     if (!detallesCompra)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 194`)
@@ -296,7 +330,7 @@ export class TransaccionService {
   }
 
   async findOneInventario(id: number) {
-    const inventario = await this.inventarioRepository.findOne({ where: { id }, relations:["usuario", "almacen"]});
+    const inventario = await this.inventarioRepository.findOne({ where: { id }, relations: ["usuario", "almacen"] });
     if (!inventario)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 194`)
@@ -304,7 +338,7 @@ export class TransaccionService {
   }
 
   async findOneTraslado(id: number) {
-    const traslado = await this.inventarioRepository.findOne({ where: { id }, relations:["almacenDestino", "almacenOrigen", "inventario"]});
+    const traslado = await this.inventarioRepository.findOne({ where: { id }, relations: ["almacenDestino", "almacenOrigen", "inventario"] });
     if (!traslado)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 194`)
@@ -312,7 +346,7 @@ export class TransaccionService {
   }
 
   async findOneVenta(id: number) {
-    const venta = await this.ventaRepository.findOne({ where: { id }, relations:["cliente"]});
+    const venta = await this.ventaRepository.findOne({ where: { id }, relations: ["cliente"] });
     if (!venta)
       throw new NotFoundException(`id ${id} de parametro no encontrado.
     CodErrorParametroServices: 194`)
@@ -321,8 +355,8 @@ export class TransaccionService {
 
   async update(id: number, updateTransaccionDto: UpdateTransaccionDto) {
     try {
-      const transaccion = await this.transaccionRepository.findOne({ where:{ id }});
-      if (transaccion){
+      const transaccion = await this.transaccionRepository.findOne({ where: { id } });
+      if (transaccion) {
         transaccion.idTipoTransaccion = updateTransaccionDto.idTipoTransaccion;
         const fechaActual = new Date();
         transaccion.fecha = fechaActual
@@ -336,8 +370,8 @@ export class TransaccionService {
 
   async updateAlmacen(id: number, updateAlmacenDto: UpdateAlmacenDto) {
     try {
-      const almacen = await this.almacenRepository.findOne({ where:{ id }});
-      if (almacen){
+      const almacen = await this.almacenRepository.findOne({ where: { id } });
+      if (almacen) {
         almacen.NIT = updateAlmacenDto.NIT;
         almacen.nombre = updateAlmacenDto.nombre;
         almacen.direccion = updateAlmacenDto.direccion;
@@ -353,9 +387,9 @@ export class TransaccionService {
 
   async updateCaja(id: number, updateCajaDto: UpdateCajaDto) {
     try {
-      const caja = await this.cajaRepository.findOne({ where:{ id }});
-      if (caja){
-        caja.idTipoTransaccion = updateCajaDto.idTipoTransaccion;
+      const caja = await this.cajaRepository.findOne({ where: { id } });
+      if (caja) {
+        // caja.idTipoTransaccion = updateCajaDto.idTipoTransaccion;
         caja.valor = updateCajaDto.valor;
         const fechaActual = new Date();
         caja.fecha = fechaActual;
@@ -369,8 +403,8 @@ export class TransaccionService {
 
   async updateCliente(id: number, updateClienteDto: UpdateClienteDto) {
     try {
-      const cliente = await this.clienteRepository.findOne({ where:{ id } });
-      if (cliente){
+      const cliente = await this.clienteRepository.findOne({ where: { id } });
+      if (cliente) {
         cliente.nombre = updateClienteDto.nombre;
         cliente.apellido = updateClienteDto.apellido;
         const fechaActual = new Date();
@@ -388,8 +422,8 @@ export class TransaccionService {
 
   async updateCompra(id: number, updateCompraDto: UpdateCompraDto) {
     try {
-      const compra = await this.compraRepository.findOne({ where:{ id } });
-      if (compra){
+      const compra = await this.compraRepository.findOne({ where: { id } });
+      if (compra) {
         compra.valorCompra = updateCompraDto.valorCompra;
         compra.valorPagado = updateCompraDto.valorPagado;
         compra.cuota = updateCompraDto.cuota;
@@ -406,8 +440,8 @@ export class TransaccionService {
 
   async updateDetallesCompra(id: number, updateDetallesCompraDto: UpdateDetallesCompraDto) {
     try {
-      const detallesCompra = await this.detallesCRepository.findOne({ where:{ id } });
-      if (detallesCompra){
+      const detallesCompra = await this.detallesCRepository.findOne({ where: { id } });
+      if (detallesCompra) {
         detallesCompra.idTipoDPago = updateDetallesCompraDto.idTipoDPago;
         detallesCompra.valorPagado = updateDetallesCompraDto.valorPagado;
         const fechaActual = new Date();
@@ -422,8 +456,8 @@ export class TransaccionService {
 
   async updateInventario(id: number, updateInventarioDto: UpdateInventarioDto) {
     try {
-      const inventario = await this.inventarioRepository.findOne({ where:{ id } });
-      if (inventario){
+      const inventario = await this.inventarioRepository.findOne({ where: { id } });
+      if (inventario) {
         inventario.nombre = updateInventarioDto.nombre;
         inventario.descripcion = updateInventarioDto.descripcion;
         inventario.idTipoObjeto = updateInventarioDto.idTipoObjeto;
@@ -439,8 +473,8 @@ export class TransaccionService {
 
   async updateTraslado(id: number, updateTrasladoDto: UpdateTrasladoDto) {
     try {
-      const traslado = await this.trasladoRepository.findOne({ where:{ id } });
-      if (traslado){
+      const traslado = await this.trasladoRepository.findOne({ where: { id } });
+      if (traslado) {
         const fechaActual = new Date();
         traslado.fecha = fechaActual;
         return await this.trasladoRepository.save(traslado);
@@ -453,8 +487,8 @@ export class TransaccionService {
 
   async updateVenta(id: number, updateVentaDto: UpdateVentaDto) {
     try {
-      const venta = await this.ventaRepository.findOne({ where:{ id } });
-      if (venta){
+      const venta = await this.ventaRepository.findOne({ where: { id } });
+      if (venta) {
         venta.valor = updateVentaDto.valor;
         return await this.trasladoRepository.save(venta);
       }

@@ -1,4 +1,4 @@
-import { ManyToOne, Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { ManyToOne, Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { Almacen, Inventario, Transaccion } from "./";
 
 @Entity()
@@ -19,8 +19,9 @@ export class Traslado {
     @ManyToOne(() => Inventario, (inventario) => inventario.id, { nullable: false })
     inventario: Inventario;
 
-    @OneToMany(() => Transaccion, transaccion => transaccion, { nullable: false })
-    transacciones: Transaccion[];
+    @OneToOne(() => Transaccion, { nullable: false })
+    @JoinColumn()
+    transacciones: Transaccion;
 
     @Column({
         type: 'datetime'

@@ -14,6 +14,7 @@ import { Repository } from 'typeorm';
 import { CreateTipoUsuarioDto } from './dto/create-tipo-usuario.dto';
 import { CreatePermisoDto } from './dto/create-permiso.dto';
 import { CreateModuloAccionDto } from './dto/create-modulo-accion.dto';
+import { ParametroService } from 'src/parametro/parametro.service';
 const bcrypt = require("bcrypt");
 
 @Injectable()
@@ -32,6 +33,8 @@ export class UsuarioService {
 
     @InjectRepository(ModuloAccione)
     private readonly moduloARepository: Repository<ModuloAccione>,
+
+    private readonly parametroService: ParametroService
   ) { }
 
   async create(createUsuarioDto: CreateUsuarioDto) {

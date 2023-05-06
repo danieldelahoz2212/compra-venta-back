@@ -42,8 +42,9 @@ export class Compra {
     @ManyToOne(() => Cliente, (cliente) => cliente.id, { nullable: false })
     cliente: Cliente;
 
-    @OneToMany(() => Transaccion, transaccion => transaccion, { nullable: false })
-    transacciones: Transaccion[];
+    @OneToOne(() => Transaccion, { nullable: false })
+    @JoinColumn()
+    transacciones: Transaccion;
 
     @OneToMany(() => DetallesCompra, detallesCompra => detallesCompra.compra)
     detalles: DetallesCompra[];

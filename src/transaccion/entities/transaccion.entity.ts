@@ -22,14 +22,14 @@ export class Transaccion {
     @OneToOne(() => Caja, (caja) => caja.transaccion)
     caja: Caja;
 
-    @ManyToOne(() => Compra, (compra) => compra.transacciones, { nullable: false })
-    compra: Compra;
+    // @ManyToOne(() => Compra, (compra) => compra.id)
+    // compra: Compra;
 
-    @ManyToOne(() => Venta, (venta) => venta.transacciones, { nullable: false })
-    venta: Venta;
+    // @ManyToOne(() => Venta, (venta) => venta.transacciones)
+    // venta: Venta;
 
-    @ManyToOne(() => Traslado, (traslado) => traslado.transacciones, { nullable: false })
-    traslado: Traslado;
+    // @ManyToOne(() => Traslado, (traslado) => traslado.transacciones)
+    // traslado: Traslado;
 
     @Column({
         type: 'tinyint',
@@ -38,3 +38,4 @@ export class Transaccion {
     })
     estado: number;
 }
+

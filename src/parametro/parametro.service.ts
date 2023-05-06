@@ -17,8 +17,7 @@ export class ParametroService {
     private readonly parametroRepository: Repository<Parametro>,
 
     @InjectRepository(ValorParametro)
-    private readonly valorParametroRepository: Repository<ValorParametro>,
-
+    public readonly valorParametroRepository: Repository<ValorParametro>,
   ) { }
 
   async create(createParametroDto: CreateParametroDto) {

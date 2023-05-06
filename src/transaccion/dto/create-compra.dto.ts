@@ -4,6 +4,11 @@ import { IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-val
 
 export class CreateCompraDto {
 
+    @IsInt()
+    @IsPositive()
+    @IsOptional()
+    transaccionId: number;
+    
     @IsNumber()
     valorCompra: number;
 

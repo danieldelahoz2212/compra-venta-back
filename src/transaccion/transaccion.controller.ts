@@ -21,11 +21,11 @@ import { UpdateVentaDto } from './dto/update-venta.dto';
 
 @Controller('transaccion')
 export class TransaccionController {
-  constructor(private readonly transaccionService: TransaccionService) {}
+  constructor(private readonly transaccionService: TransaccionService) { }
 
   @Post()
-  create(@Body() createTransaccionDto: CreateTransaccionDto) {
-    return this.transaccionService.create(createTransaccionDto);
+  create(@Body() createTransaccionDto: CreateTransaccionDto, createCaja: CreateCajaDto, createTransaccion: CreateCompraDto | CreateVentaDto | CreateTrasladoDto) {
+    return this.transaccionService.create(createTransaccionDto, createCaja, createTransaccion);
   }
 
   @Post('createAlmacen')
@@ -33,20 +33,20 @@ export class TransaccionController {
     return this.transaccionService.createAlmacen(createAlmacenDto);
   }
 
-  @Post('createCaja')
-  createCaja(@Body() createCajaDto: CreateCajaDto) {
-    return this.transaccionService.createCaja(createCajaDto);
-  }
+  // @Post('createCaja')
+  // createCaja(@Body() createCajaDto: CreateCajaDto) {
+  //   return this.transaccionService.createCaja(createCajaDto);
+  // }
 
   @Post('createCliente')
   createCliente(@Body() createClienteDto: CreateClienteDto) {
     return this.transaccionService.createCliente(createClienteDto);
   }
 
-  @Post('createCompra')
-  createCompra(@Body() createCompraDto: CreateCompraDto) {
-    return this.transaccionService.createCompra(createCompraDto);
-  }
+  // @Post('createCompra')
+  // createCompra(@Body() createCompraDto: CreateCompraDto) {
+  //   return this.transaccionService.createCompra(createCompraDto);
+  // }
 
   @Post('createDetallesC')
   createDetallesCompra(@Body() createDetallesComrpaDto: CreateDetallesCompraDto) {
@@ -58,15 +58,15 @@ export class TransaccionController {
     return this.transaccionService.createInventario(createInventarioDto);
   }
 
-  @Post('createTraslado')
-  createTraslado(@Body() createTrasladoDto: CreateTrasladoDto) {
-    return this.transaccionService.createTraslado(createTrasladoDto);
-  }
+  // @Post('createTraslado')
+  // createTraslado(@Body() createTrasladoDto: CreateTrasladoDto) {
+  //   return this.transaccionService.createTraslado(createTrasladoDto);
+  // }
 
-  @Post('createVenta')
-  createVenta(@Body() createVentaDto: CreateVentaDto) {
-    return this.transaccionService.createVenta(createVentaDto);
-  }
+  // @Post('createVenta')
+  // createVenta(@Body() createVentaDto: CreateVentaDto) {
+  //   return this.transaccionService.createVenta(createVentaDto);
+  // }
 
   @Get()
   findAll() {

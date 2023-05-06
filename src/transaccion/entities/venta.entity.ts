@@ -22,8 +22,9 @@ export class Venta {
     @ManyToOne(() => Cliente, (cliente) => cliente.id, { nullable: false })
     cliente: Cliente;
 
-    @OneToMany(() => Transaccion, transaccion => transaccion, { nullable: false })
-    transacciones: Transaccion[];
+    @OneToOne(() => Transaccion, { nullable: false })
+    @JoinColumn()
+    transacciones: Transaccion;
 
     @Column({
         type: 'tinyint',

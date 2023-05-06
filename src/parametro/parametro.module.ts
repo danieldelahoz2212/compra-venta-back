@@ -8,7 +8,7 @@ import { Parametro, ValorParametro } from './entities';
   controllers: [ParametroController],
   providers: [ParametroService],
   imports: [
-    TypeOrmModule.forFeature([Parametro, ValorParametro])
+    TypeOrmModule.forFeature([Parametro, ValorParametro]),
   ],
   exports: [
     ParametroService,
