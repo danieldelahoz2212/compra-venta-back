@@ -24,7 +24,8 @@ export class TransaccionController {
   constructor(private readonly transaccionService: TransaccionService) { }
 
   @Post()
-  create(@Body() createTransaccionDto: CreateTransaccionDto, createCaja: CreateCajaDto, createTransaccion: CreateCompraDto | CreateVentaDto | CreateTrasladoDto) {
+  create(@Body() data: {createTransaccionDto: CreateTransaccionDto, createCaja: CreateCajaDto, createTransaccion: CreateCompraDto | CreateVentaDto | CreateTrasladoDto}) {
+    const {createTransaccionDto, createCaja, createTransaccion}=data;
     return this.transaccionService.create(createTransaccionDto, createCaja, createTransaccion);
   }
 
@@ -128,9 +129,9 @@ export class TransaccionController {
     return this.transaccionService.findOneCaja(+id);
   }
 
-  @Get('cliente/:id')
-  findOneCliente(@Param('id') id: string) {
-    return this.transaccionService.findOneCliente(+id);
+  @Get('cliente/:idTipoDocumento/:numDocumento')
+  findOneCliente(@Param('numDocumento') numDocumento: string,@Param('idTipoDocumento') idTipoDocumento: string) {
+    return this.transaccionService.findOneCliente(+idTipoDocumento,numDocumento);
   }
 
   @Get('compra/:id')

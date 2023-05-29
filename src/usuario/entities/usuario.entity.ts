@@ -14,7 +14,7 @@ export class Usuario {
     @Column({
         type: 'bigint'
     })
-    idTipoDocunento: number;
+    idTipoDocumento: number;
 
     @Column({
         type: 'varchar',

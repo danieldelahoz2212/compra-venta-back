@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsDate, IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
 
 
 
@@ -12,8 +12,8 @@ export class CreateCajaDto {
     @IsNumber()
     valor: number;
 
-    @IsDateString()
-    fecha: string;
+    @IsDate()
+    fecha: Date;
 
     @IsInt()
     @IsNumber()

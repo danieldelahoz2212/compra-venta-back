@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
+import { IsDate, IsInt, IsOptional, IsPositive } from "class-validator";
 
 
 
@@ -8,23 +8,11 @@ export class CreateTransaccionDto {
     @IsPositive()
     idTipoTransaccion: number;
 
-    @IsDateString()
-    fecha: string;
-
-    // @IsInt()
-    // @IsPositive()
-    // compra: number;
-
-    // @IsInt()
-    // @IsPositive()
-    // venta: number;
-
-    // @IsInt()
-    // @IsPositive()
-    // traslado: number;
+    @IsDate()
+    fecha: String;
 
     @IsInt()
     @IsPositive()
     @IsOptional()
     estado: number;
-}
+}   

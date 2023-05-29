@@ -5,9 +5,8 @@ import { IsInt, IsNumber, IsOptional, IsPositive, IsString, MinLength } from "cl
 export class CreateUsuarioDto {
 
     @IsInt()
-    @IsNumber()
     @IsPositive()
-    idTipoDocunento: number;
+    idTipoDocumento: number;
 
     @IsString()
     numDocumento: string;

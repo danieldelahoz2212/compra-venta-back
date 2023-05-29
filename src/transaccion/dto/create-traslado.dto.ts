@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
+import { IsDate, IsDateString, IsInt, IsOptional, IsPositive } from "class-validator";
 
 
 
@@ -21,12 +21,16 @@ export class CreateTrasladoDto {
 
     @IsInt()
     @IsPositive()
-    @IsOptional()
     inventario: number;
 
-    @IsDateString()
-    fecha: string;
-
+    @IsDate()
+    fecha: Date;
+    
+    @IsInt()
+    @IsPositive()
+    @IsOptional()
+    cliente: undefined;
+    
     @IsInt()
     @IsPositive()
     @IsOptional()

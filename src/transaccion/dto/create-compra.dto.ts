@@ -1,4 +1,5 @@
-import { IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsDate, IsDateString, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { CreateClienteDto } from "./create-cliente.dto";
 
 
 
@@ -25,13 +26,13 @@ export class CreateCompraDto {
     @IsPositive()
     cuotaPagadas: number;
 
-    @IsDateString()
-    fecha: string;
+    @IsDate()
+    fecha: Date;
 
     @IsInt()
     @IsPositive()
     @IsOptional()
-    cliente: number;
+    cliente: number|CreateClienteDto;
 
     @IsInt()
     @IsPositive()

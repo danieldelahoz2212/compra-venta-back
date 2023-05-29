@@ -22,14 +22,14 @@ export class Cliente {
     apellido: string;
 
     @Column({
-        type: 'datetime'
+        type: 'date',
     })
-    FechaNacimiento: Date;
+    fechaNacimiento: Date;
 
     @Column({ 
         type: 'bigint'
     })
-    idTipoDocunento: number;
+    idTipoDocumento: number;
 
     @Column({
         type: 'varchar',

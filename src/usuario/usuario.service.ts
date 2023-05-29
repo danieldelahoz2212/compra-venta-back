@@ -33,7 +33,7 @@ export class UsuarioService {
 
     @InjectRepository(ModuloAccione)
     private readonly moduloARepository: Repository<ModuloAccione>,
-
+    
     private readonly parametroService: ParametroService
   ) { }
 
@@ -143,7 +143,7 @@ export class UsuarioService {
     try {
       const usuario = await this.usuarioRepository.findOne({ where: { id } });
       if (usuario) {
-        usuario.idTipoDocunento = updateUsuarioDto.idTipoDocunento;
+        usuario.idTipoDocumento = updateUsuarioDto.idTipoDocumento;
         usuario.numDocumento = updateUsuarioDto.numDocumento;
         usuario.nombre = updateUsuarioDto.nombre;
         usuario.apellido = updateUsuarioDto.apellido;

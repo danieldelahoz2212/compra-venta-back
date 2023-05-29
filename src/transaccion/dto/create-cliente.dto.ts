@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsDate, IsDateString, IsInt, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 
 
@@ -9,14 +9,14 @@ export class CreateClienteDto {
 
     @IsString()
     apellido: string;
-
-    @IsDateString()
-    fechaNacimiento: string;
+    
+    @IsDate()
+    fechaNacimiento: Date;
     
     @IsInt()
     @IsNumber()
     @IsPositive()
-    idTipoDocunento: number;
+    idTipoDocumento: number;
 
     @IsString()
     numDocumento: string;

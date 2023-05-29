@@ -29,12 +29,12 @@ export class ParametroController {
     return this.parametroService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id') id: number, @Body() updateParametroDto: UpdateParametroDto) {
     return this.parametroService.update(id, updateParametroDto);
   }
 
-  @Put('update-value/:id')
+  @Patch('update-value/:id')
   valUpdate(@Param('id') id: number, @Body() updateValorParametroDto: UpdateValorParametroDto) {
     return this.parametroService.valUpdate(id, updateValorParametroDto);
   }

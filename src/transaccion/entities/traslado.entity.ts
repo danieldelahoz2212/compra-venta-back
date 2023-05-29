@@ -24,7 +24,7 @@ export class Traslado {
     transacciones: Transaccion;
 
     @Column({
-        type: 'datetime'
+        type: 'date'
     })
     fecha: Date;
 

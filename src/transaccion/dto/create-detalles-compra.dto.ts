@@ -1,4 +1,4 @@
-import { IsDateString, IsDecimal, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsDate, IsDecimal, IsInt, IsNumber, IsOptional, IsPositive } from "class-validator";
 
 
 
@@ -14,8 +14,8 @@ export class CreateDetallesCompraDto {
     @IsPositive()
     valorPagado: number;
 
-    @IsDateString()
-    fecha: string;
+    @IsDate()
+    fecha: Date;
 
     @IsInt()
     @IsPositive()

@@ -21,7 +21,7 @@ export class DetallesCompra {
     valorPagado: number;
 
     @Column({
-        type: 'datetime'
+        type: 'date'
     })
     fecha: Date;
 

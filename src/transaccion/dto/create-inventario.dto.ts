@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsInt, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsDate, IsInt, IsNumber, IsOptional, IsPositive, IsString, isDate } from "class-validator";
 
 
 
@@ -23,8 +23,8 @@ export class CreateInventarioDto {
     @IsNumber()
     idTipoObjeto: number;
 
-    @IsDateString()
-    fechaDeEntrafa: string;
+    @IsDate()
+    fechaDeEntrada: Date;
 
     @IsInt()
     @IsPositive()

@@ -17,7 +17,7 @@ export class Caja {
     valor: number;
 
     @Column({
-        type: 'datetime'
+        type: 'date'
     })
     fecha: Date;
 
